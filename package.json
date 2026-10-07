@@ -1,0 +1,24 @@
+{
+  "name": "hither",
+  "version": "0.1.0",
+  "private": true,
+  "description": "One App Store link for every country. A free, open-source Cloudflare Worker.",
+  "license": "MIT",
+  "homepage": "https://hither.link",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wisteenio/hither.git"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261001.1",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0",
+    "wrangler": "^4.0.0"
+  }
+}

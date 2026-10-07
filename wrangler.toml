@@ -1,0 +1,14 @@
+name = "hither"
+main = "src/index.ts"
+compatibility_date = "2025-09-01"
+workers_dev = false
+preview_urls = false
+
+[[routes]]
+pattern = "hither.link"
+custom_domain = true
+
+# Static files (self-hosted fonts). Served by Cloudflare before the Worker runs;
+# any path without a matching file, including "/", falls through to the Worker.
+[assets]
+directory = "./public"

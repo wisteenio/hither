@@ -1,0 +1,51 @@
+name: Test and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  TMPDIR: /home/runner/tmp
+  TMP: /home/runner/tmp
+  TEMP: /home/runner/tmp
+  NPM_CONFIG_CACHE: /home/runner/tmp/npm-cache
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: mkdir -p "$HOME/tmp"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: cp -R "$GITHUB_WORKSPACE" "$HOME/tmp/hither"
+      - run: npm ci
+        working-directory: /home/runner/tmp/hither
+      - run: npm run typecheck
+        working-directory: /home/runner/tmp/hither
+      - run: npm test
+        working-directory: /home/runner/tmp/hither
+
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - run: mkdir -p "$HOME/tmp"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: cp -R "$GITHUB_WORKSPACE" "$HOME/tmp/hither"
+      - run: npm ci
+        working-directory: /home/runner/tmp/hither
+      - run: npm run deploy
+        working-directory: /home/runner/tmp/hither
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
