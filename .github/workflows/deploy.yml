@@ -33,7 +33,7 @@ jobs:
 
   deploy:
     needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.AUTO_DEPLOY == 'true'
     runs-on: ubuntu-latest
     steps:
       - run: mkdir -p "$HOME/tmp"

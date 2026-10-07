@@ -62,7 +62,7 @@ Account IDs and API tokens belong in environment variables or GitHub Secrets, ne
 
 ### Automatic deploys from GitHub
 
-`.github/workflows/deploy.yml` runs the tests and deploys on every push to `main`. Add two repository secrets:
+`.github/workflows/deploy.yml` runs tests on pushes and pull requests. To enable deployment on pushes to `main`, set the repository variable `AUTO_DEPLOY` to `true` and add two repository secrets:
 
 - `CLOUDFLARE_API_TOKEN`: a token made from the "Edit Cloudflare Workers" template
 - `CLOUDFLARE_ACCOUNT_ID`: shown in your Cloudflare dashboard
