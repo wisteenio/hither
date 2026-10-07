@@ -56,7 +56,7 @@ npx wrangler login
 CLOUDFLARE_ACCOUNT_ID=your-account-id npm run deploy
 ```
 
-The production custom domain is `hither.link`. `wrangler.toml` binds it to the Worker and disables temporary `workers.dev` and preview URLs. To deploy your own copy, change the domain in `wrangler.toml` to an active domain in your Cloudflare account.
+The production custom domain is `hither.link`. `wrangler.toml` binds it to the Worker and disables temporary `workers.dev` and preview URLs. To deploy your own copy, change the domain in `wrangler.toml`, `public/robots.txt`, and `public/sitemap.xml` to an active domain in your Cloudflare account.
 
 Account IDs and API tokens belong in environment variables or GitHub Secrets, never in source files.
 
@@ -66,6 +66,12 @@ Account IDs and API tokens belong in environment variables or GitHub Secrets, ne
 
 - `CLOUDFLARE_API_TOKEN`: a token made from the "Edit Cloudflare Workers" template
 - `CLOUDFLARE_ACCOUNT_ID`: shown in your Cloudflare dashboard
+
+## Search engines
+
+The homepage has a canonical URL, descriptive metadata, social previews, and `WebSite` structured data. `public/robots.txt` points to `public/sitemap.xml`, which lists only the homepage. App redirects and lookup API responses use `X-Robots-Tag: noindex, follow`; they keep their existing routing behavior. `HEAD` requests return the same status and headers as `GET` without a body.
+
+Verify your domain in Google Search Console and submit `https://hither.link/sitemap.xml` to monitor discovery and indexing. Change this URL when deploying your own copy.
 
 ## Cost
 

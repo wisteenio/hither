@@ -1,2 +1,6 @@
 /fonts/*
   Cache-Control: public, max-age=2592000
+/robots.txt
+  Cache-Control: public, max-age=3600
+/sitemap.xml
+  Cache-Control: public, max-age=3600

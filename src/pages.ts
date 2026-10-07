@@ -2,7 +2,7 @@ import { storeUrl } from "./apple";
 
 const REPO_URL = "https://github.com/wisteenio/hither";
 const EXAMPLE_ID = "1232780281";
-const DESCRIPTION = "One App Store link that sends every visitor to their own country's store.";
+const DESCRIPTION = "Create one free App Store link for every country. Hither sends visitors to their local store and finds a fallback when your app isn't available.";
 
 export function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) =>
@@ -258,20 +258,36 @@ const homeScript = String.raw`
 })();
 `;
 
-// Link preview for shared home page links. og.png is rendered once and committed (see docs/DESIGN.md).
-function previewMeta(title: string, origin: string): string {
+// Search and sharing metadata for the homepage. og.png is committed (see docs/DESIGN.md).
+function homeMeta(title: string, origin: string): string {
+  const canonical = new URL("/", origin).href;
+  const site = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Hither",
+    url: canonical,
+    description: DESCRIPTION,
+    inLanguage: "en",
+  });
   return `
+<link rel="canonical" href="${escapeHtml(canonical)}">
+<meta name="robots" content="index, follow">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="Hither">
 <meta property="og:title" content="${escapeHtml(title)}">
-<meta property="og:description" content="Share one link. Each visitor lands in their own country's App Store.">
-<meta property="og:url" content="${escapeHtml(origin)}/">
-<meta property="og:image" content="${escapeHtml(origin)}/og.png">
+<meta property="og:description" content="${escapeHtml(DESCRIPTION)}">
+<meta property="og:url" content="${escapeHtml(canonical)}">
+<meta property="og:image" content="${escapeHtml(canonical)}og.png">
+<meta property="og:image:alt" content="Hither: one App Store link for every country">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-<meta name="twitter:card" content="summary_large_image">`;
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="${escapeHtml(title)}">
+<meta name="twitter:description" content="${escapeHtml(DESCRIPTION)}">
+<script type="application/ld+json">${site}</script>`;
 }
 
 export function homePage(origin = "https://hither.link"): string {
-  const title = "Hither: one App Store link for every country";
+  const title = "Hither — Free App Store Links for Every Country";
   const h = escapeHtml(new URL(origin).host);
   return layout(
     title,
@@ -344,6 +360,6 @@ export function homePage(origin = "https://hither.link"): string {
     </main>
     <footer><div class="wrap"><span>Hither is free and open source.</span><a href="${REPO_URL}">View the code on GitHub</a></div></footer>
     <script>${homeScript}</script>`,
-    previewMeta(title, origin),
+    homeMeta(title, origin),
   );
 }

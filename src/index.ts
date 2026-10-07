@@ -54,17 +54,22 @@ async function followLink(appId: string, request: Request): Promise<Response> {
 
 export default {
   async fetch(request: Request): Promise<Response> {
-    if (request.method !== "GET") return html(notFoundPage(), 404);
+    if (request.method !== "GET" && request.method !== "HEAD") return html(notFoundPage(), 404);
     const { pathname, origin } = new URL(request.url);
-
-    if (pathname === "/") return html(homePage(origin));
-
     const api = pathname.match(API_APP_PATH);
-    if (api) return describeApp(api[1]);
-
     const app = pathname.match(APP_PATH);
-    if (app) return followLink(app[1], request);
 
-    return html(notFoundPage(), 404);
+    let response: Response;
+    if (pathname === "/") response = html(homePage(origin));
+    else if (api) response = await describeApp(api[1]);
+    else if (app) response = await followLink(app[1], request);
+    else response = html(notFoundPage(), 404);
+
+    // Search results should lead to the tool, not its API or geo-dependent app pages.
+    if (pathname !== "/") response.headers.set("x-robots-tag", "noindex, follow");
+
+    return request.method === "HEAD"
+      ? new Response(null, { status: response.status, headers: response.headers })
+      : response;
   },
 } satisfies ExportedHandler;
