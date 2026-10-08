@@ -216,43 +216,55 @@ const homeScript = String.raw`
     const t = text.trim();
     const bare = t.match(/^(?:id)?(\d{5,12})$/i);
     if (bare) return bare[1];
-    const m = t.match(/(?:apps|itunes)\.apple\.com\/.*\/id(\d{5,12})(?:[\/?#]|$)/i);
-    return m ? m[1] : null;
+    try {
+      const url = new URL(t);
+      if (!/^https?:$/.test(url.protocol) || !/(^|\.)(apps|itunes)\.apple\.com$/i.test(url.hostname)) return null;
+      const m = url.pathname.match(/\/id(\d{5,12})(?:\/|$)/i);
+      return m ? m[1] : null;
+    } catch {
+      return null;
+    }
   };
   const form = document.getElementById("maker"), input = document.getElementById("app-url");
-  const out = document.getElementById("out"), button = form.querySelector("button");
+  const out = document.getElementById("out");
   const showError = (message) => { out.innerHTML = '<p class="error" role="alert"></p>'; out.firstChild.textContent = message; };
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const id = parseId(input.value);
-    if (!id) { showError("That isn't an App Store link. Paste a link that contains id followed by numbers, like id1232780281."); input.focus(); return; }
-    button.disabled = true; button.textContent = "Checking the App Store"; out.innerHTML = "";
+    if (!id) { showError("Enter an App Store link or App ID, like id1232780281."); input.focus(); return; }
+    const link = location.origin + "/" + id;
+    out.innerHTML = '<div class="result"><div class="app"><strong></strong></div>'
+      + '<label for="hither-link">Your Hither link</label><input id="hither-link" readonly>'
+      + '<div class="actions"><button type="button" class="btn" id="copy">Copy link</button>'
+      + '<a class="btn quiet" target="_blank" rel="noopener">Try it</a></div>'
+      + '<p class="hint">Your link is ready. Checking public App Store information…</p></div>';
+    out.querySelector("strong").textContent = "App ID " + id;
+    const field = out.querySelector("#hither-link"); field.value = link;
+    out.querySelector("a").href = link;
+    const status = out.querySelector(".hint");
+    const copy = out.querySelector("#copy");
+    copy.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(link); } catch { field.select(); document.execCommand("copy"); }
+      copy.textContent = "Copied"; setTimeout(() => { copy.textContent = "Copy link"; }, 1800);
+    });
+
+    // Metadata helps confirm the ID, but never gates link creation or copying.
     try {
       const res = await fetch("/api/app/" + id);
       const data = await res.json();
-      if (!res.ok) throw new Error(res.status === 404
-        ? "Hither couldn't find this app in the App Store. Check the link and try again."
-        : (data.error || "Hither couldn't reach the App Store. Try again in a minute."));
-      const link = location.origin + "/" + id;
-      out.innerHTML = '<div class="result"><div class="app"><img alt=""><strong></strong></div>'
-        + '<label for="hither-link">Your Hither link</label><input id="hither-link" readonly>'
-        + '<div class="actions"><button type="button" class="btn" id="copy">Copy link</button>'
-        + '<a class="btn quiet" target="_blank" rel="noopener">Try it</a></div></div>';
-      const img = out.querySelector("img");
-      if (data.iconUrl) img.src = data.iconUrl; else img.remove();
+      if (out.querySelector("#hither-link") !== field) return;
+      if (!res.ok || !data.name) throw new Error("Unconfirmed app");
       out.querySelector("strong").textContent = data.name;
-      const field = out.querySelector("#hither-link"); field.value = link;
-      out.querySelector("a").href = link;
-      const copy = out.querySelector("#copy");
-      copy.addEventListener("click", async () => {
-        try { await navigator.clipboard.writeText(link); } catch { field.select(); document.execCommand("copy"); }
-        copy.textContent = "Copied"; setTimeout(() => { copy.textContent = "Copy link"; }, 1800);
-      });
-    } catch (err) {
-      showError(err.message);
-    } finally {
-      button.disabled = false; button.textContent = "Get my link";
+      if (data.iconUrl) {
+        const img = document.createElement("img"); img.alt = ""; img.src = data.iconUrl;
+        out.querySelector(".app").prepend(img);
+      }
+      status.remove();
+    } catch {
+      if (out.querySelector("#hither-link") === field) {
+        status.textContent = "We couldn't confirm this app's public App Store information. Check the App ID. If it hasn't launched yet, you can still prepare and copy this link.";
+      }
     }
   });
 })();
@@ -304,13 +316,13 @@ export function homePage(origin = "https://hither.link"): string {
         </div>
 
         <form class="maker" id="maker" novalidate>
-          <label for="app-url">Paste your App Store link</label>
+          <label for="app-url">Paste your App Store link or App ID</label>
           <div class="field">
             <input type="text" id="app-url" inputmode="url" autocomplete="off" spellcheck="false"
                    placeholder="https://apps.apple.com/us/app/your-app/id123456789">
             <button class="btn" type="submit">Get my link</button>
           </div>
-          <p class="hint">A link from any country works. The same app always gets the same Hither link.</p>
+          <p class="hint">A link from any country works. The same app always gets the same Hither link. You can prepare it before launch.</p>
           <div id="out" aria-live="polite"></div>
         </form>
       </section>
@@ -353,6 +365,7 @@ export function homePage(origin = "https://hither.link"): string {
             <details><summary>Do I need an account?</summary><p>No. Paste a link and copy the result. Links don't expire and there's nothing to manage.</p></details>
             <details><summary>Does Hither store my links?</summary><p>No. A Hither link holds only your app's ID. Everything else comes from Apple when someone clicks, so nobody can change where your link goes.</p></details>
             <details><summary>What if I paste a link from a different country?</summary><p>You get the same Hither link. The app ID is identical in every country, and that's all the link contains.</p></details>
+            <details><summary>Can I get a link before my app launches?</summary><p>Yes. Paste the Apple ID from your app's App Information page in App Store Connect. You can prepare and copy your Hither link before uploading a build or publishing. Visitors can reach the store page after your app is publicly available. Hither caches store information for up to a day, so release detection may be delayed.</p></details>
             <details><summary>Can I run my own copy?</summary><p>Yes. The code is on <a href="${REPO_URL}">GitHub</a> and deploys to your own Cloudflare account in a few minutes.</p></details>
           </div>
         </div>

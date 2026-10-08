@@ -114,7 +114,7 @@ No shadows anywhere, except the input focus glow.
 | Top bar | `header.wrap.top` | Brand (links to `/`) left, "GitHub" right. Same on all pages. |
 | Route demo | `.route` with `.from`, `.via#where`, `.to` containing `.slot#slot` | `.from` shows the real host via `homePage(host)`. Example app ID `1232780281`. `.via` draws a 2px vertical connector with `::before`. |
 | Link maker | `form#maker.maker` | Label, then `.field` (input + "Get my link" button), hint, then `#out` for result or error. `novalidate`: validation is done in script so messages match the voice. |
-| Result panel | `.result` inside `#out` | App icon (omitted if Apple gives none), app name, labelled read-only link field (mono), "Copy link" (primary) and "Try it" (quiet, new tab). |
+| Result panel | `.result` inside `#out` | Appears immediately for a valid link or App ID, with the ID, labelled read-only link field (mono), "Copy link" (primary) and "Try it" (quiet, new tab). An optional lookup adds the app name and icon; unconfirmed information produces a neutral hint without removing the link. |
 | Primary button | `.btn` | Route background, route-ink text, 700 weight. |
 | Quiet button | `.btn.quiet` | Transparent, ink text, line border. |
 | Steps | `ol.steps` | CSS counter in a 2.25rem ink-outlined circle. Numbered **because the content is a real sequence**; don't reuse the pattern for unordered content. Auto-fit grid, min column `15rem`. |
@@ -183,7 +183,9 @@ With `prefers-reduced-motion: reduce`, the timer never starts: the hero stays on
 | Long country names | "Not available" copy uses `Intl.DisplayNames` (e.g. "United States", "South Korea"); button text wraps if needed |
 | Long custom domain | Route "from" line wraps (`overflow-wrap: anywhere`) |
 | Fonts fail to load | System fonts take over; layout holds because sizes are relative |
-| Slow connection | Button shows "Checking the App Store" and stays disabled until the request ends |
+| Slow connection | Link and copy action appear immediately; a result hint says public App Store information is being checked |
+| App not published or Apple lookup fails | Link remains available with the App ID and a neutral hint to check the ID; no claim that the app definitely does not exist |
+| Another link is generated during a lookup | A late metadata response cannot overwrite the newer result |
 | JavaScript disabled | Page reads fully; submitting the link maker just reloads the page. Acceptable for this audience |
 
 ## Known follow-ups

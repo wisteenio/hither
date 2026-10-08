@@ -25,11 +25,10 @@ function json(data: unknown, status = 200): Response {
   });
 }
 
-/** Used by the home page to confirm an app exists and show its name and icon. */
+/** Optional public metadata for the link maker; an app may not have launched yet. */
 async function describeApp(appId: string): Promise<Response> {
   const found = await findFallback((cc) => lookupApp(appId, cc));
-  if (!found) return json({ error: "Couldn't find this app in the App Store." }, 404);
-  return json({ id: appId, name: found.name, iconUrl: found.iconUrl });
+  return json({ id: appId, name: found?.name ?? null, iconUrl: found?.iconUrl ?? null });
 }
 
 async function followLink(appId: string, request: Request): Promise<Response> {

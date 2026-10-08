@@ -16,7 +16,9 @@ Every app has a numeric ID that's the same in every country. The only thing that
 hither.link/1232780281
 ```
 
-Paste your App Store link from any country and you always get the same link for the same app. There's nothing to store and nothing anyone can change: all information comes from Apple at click time.
+Paste your App Store link from any country, or the numeric Apple ID from App Store Connect, and you always get the same link for the same app. There's nothing to store and nothing anyone can change: all information comes from Apple at click time.
+
+You can prepare a link before uploading a build or launching your app. The link appears immediately; an optional Apple lookup adds its name and icon when available. If public information can't be confirmed, Hither still provides the link and asks you to check the ID. Visitors can reach the store page once the app is publicly available and Apple reports it in a store Hither checks. Existing store lookups are cached for up to a day, so release detection may be delayed.
 
 ## How a click works
 
