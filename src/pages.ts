@@ -1,6 +1,8 @@
 import { storeUrl } from "./apple";
 
 const REPO_URL = "https://github.com/wisteenio/hither";
+const X_HANDLE = "x_wio_x";
+const X_URL = `https://x.com/${X_HANDLE}`;
 const EXAMPLE_ID = "1232780281";
 const DESCRIPTION = "Create one free App Store link for every country. Hither sends visitors to their local store and finds a fallback when your app isn't available.";
 
@@ -64,8 +66,15 @@ p { margin:0; }
 /* Top bar */
 .top { display:flex; align-items:center; justify-content:space-between; padding-top:1.25rem; padding-bottom:1.25rem; }
 .brand { font-weight:800; font-size:1.25rem; color:var(--ink); text-decoration:none; letter-spacing:-0.02em; }
-.top a.repo { color:var(--muted); text-decoration:none; font-weight:600; }
-.top a.repo:hover { color:var(--ink); }
+.top-links { display:flex; align-items:center; gap:1rem; }
+.top-links a { display:inline-flex; align-items:center; justify-content:center;
+  color:var(--muted); text-decoration:none; font-weight:600; }
+.top-links a:hover { color:var(--ink); }
+.top-links .social { position:relative; width:1.5rem; height:1.5rem; }
+.top-links .social::before { content:""; position:absolute; inset:-0.625rem; }
+.top-links .social:focus-visible { outline-offset:2px; }
+/* Overpass's letterforms sit above the center of its line box. */
+.top-links svg { display:block; width:1rem; height:1rem; fill:currentColor; transform:translateY(-2px); }
 
 /* Hero */
 .hero { padding-top:clamp(2.5rem, 8vw, 6rem); padding-bottom:clamp(3rem, 8vw, 5.5rem); }
@@ -163,7 +172,14 @@ function layout(title: string, body: string, extraHead = ""): string {
 }
 
 function topBar(): string {
-  return `<header class="wrap top"><a class="brand" href="/">Hither</a><a class="repo" href="${REPO_URL}">GitHub</a></header>`;
+  return `<header class="wrap top"><a class="brand" href="/">Hither</a>
+    <nav class="top-links" aria-label="External links">
+      <a class="social" href="${X_URL}" target="_blank" rel="me noopener noreferrer"
+         aria-label="@${X_HANDLE} on X (opens in a new tab)" title="@${X_HANDLE} on X">
+        <svg viewBox="0 0 1200 1227" aria-hidden="true" focusable="false"><path d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z"/></svg>
+      </a>
+      <a class="repo" href="${REPO_URL}">GitHub</a>
+    </nav></header>`;
 }
 
 export function unavailablePage(
@@ -273,6 +289,8 @@ const homeScript = String.raw`
 // Search and sharing metadata for the homepage. og.png is committed (see docs/DESIGN.md).
 function homeMeta(title: string, origin: string): string {
   const canonical = new URL("/", origin).href;
+  const image = new URL("og.png", canonical).href;
+  const imageAlt = "Hither: one App Store link for every country";
   const site = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -289,12 +307,16 @@ function homeMeta(title: string, origin: string): string {
 <meta property="og:title" content="${escapeHtml(title)}">
 <meta property="og:description" content="${escapeHtml(DESCRIPTION)}">
 <meta property="og:url" content="${escapeHtml(canonical)}">
-<meta property="og:image" content="${escapeHtml(canonical)}og.png">
-<meta property="og:image:alt" content="Hither: one App Store link for every country">
+<meta property="og:image" content="${escapeHtml(image)}">
+<meta property="og:image:alt" content="${escapeHtml(imageAlt)}">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@${X_HANDLE}">
+<meta name="twitter:creator" content="@${X_HANDLE}">
 <meta name="twitter:title" content="${escapeHtml(title)}">
 <meta name="twitter:description" content="${escapeHtml(DESCRIPTION)}">
+<meta name="twitter:image" content="${escapeHtml(image)}">
+<meta name="twitter:image:alt" content="${escapeHtml(imageAlt)}">
 <script type="application/ld+json">${site}</script>`;
 }
 

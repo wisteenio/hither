@@ -58,6 +58,8 @@ All tokens are CSS custom properties on `:root`.
 
 Dark mode follows the device setting. `data-theme="light"` or `data-theme="dark"` on `<html>` forces either theme (no toggle is shipped).
 
+The homepage's X card uses `summary_large_image` with an explicit absolute image URL and image description. Its `twitter:site` and `twitter:creator` attributes use the same creator account as the top-bar profile link. Open Graph and X share the existing 1200×630 preview image, title, and description.
+
 **Rule:** `--signal` is reserved for the country slot. The site icon and the link preview image are that slot, so they use it too; on the page itself, nothing but the hero slot is yellow. Its meaning is "the part Hither fills in"; a second yellow element weakens the hero.
 
 #### Contrast (WCAG 2.1)
@@ -111,7 +113,7 @@ No shadows anywhere, except the input focus glow.
 
 | Component | Markup / class | Notes |
 |---|---|---|
-| Top bar | `header.wrap.top` | Brand (links to `/`) left, "GitHub" right. Same on all pages. |
+| Top bar | `header.wrap.top` | Brand (links to `/`) left; `nav.top-links` right with the creator's X icon before "GitHub". The official X outline uses the existing muted/ink link colors, a 16px glyph in a 24px visible/focus area, and an accessible account label. The glyph is raised 2px to align visually with Overpass's letterforms. A transparent pseudo-element extends the click area to 44px without enlarging the focus outline. Same on all pages. |
 | Route demo | `.route` with `.from`, `.via#where`, `.to` containing `.slot#slot` | `.from` shows the real host via `homePage(host)`. Example app ID `1232780281`. `.via` draws a 2px vertical connector with `::before`. |
 | Link maker | `form#maker.maker` | Label, then `.field` (input + "Get my link" button), hint, then `#out` for result or error. `novalidate`: validation is done in script so messages match the voice. |
 | Result panel | `.result` inside `#out` | Appears immediately for a valid link or App ID, with the ID, labelled read-only link field (mono), "Copy link" (primary) and "Try it" (quiet, new tab). An optional lookup adds the app name and icon; unconfirmed information produces a neutral hint without removing the link. |
@@ -167,7 +169,7 @@ With `prefers-reduced-motion: reduce`, the timer never starts: the hero stays on
 
 ## Accessibility
 
-- **Focus order:** brand, GitHub, link input, Get my link, (after success) Copy link, Try it, FAQ summaries in order, footer link.
+- **Focus order:** brand, X profile, GitHub, link input, Get my link, (after success) Copy link, Try it, FAQ summaries in order, footer link. The X icon opens the creator's profile in a new tab; its accessible label includes the account and new-tab behavior.
 - **Labels:** input has a visible `<label for="app-url">`; result field has "Your Hither link" label; route demo has an `aria-label` describing the example.
 - **Live regions:** `#out` is `aria-live="polite"`, so results and errors are announced; error paragraphs also have `role="alert"`. The rotating caption is `aria-live="off"` on purpose: announcing it every 2.2s would be noise.
 - **Tables:** device names are `th scope="row"`.
