@@ -13,6 +13,13 @@ describe("parseAppStoreLink", () => {
   it("handles links without a country", () => {
     expect(parseAppStoreLink("https://apps.apple.com/app/id1232780281")).toEqual({ id: "1232780281", country: null });
   });
+  it.each([
+    ["apps.apple.com/us/app/id1232780281", "us"],
+    ["  apps.apple.com/app/id1232780281  ", null],
+    ["itunes.apple.com/DE/app/demo/id1232780281?mt=8", "de"],
+  ])("handles App Store links without a protocol: %s", (input, country) => {
+    expect(parseAppStoreLink(input)).toEqual({ id: "1232780281", country });
+  });
   it("handles old itunes links and bare ids", () => {
     expect(parseAppStoreLink("https://itunes.apple.com/DE/app/id123456")?.country).toBe("de");
     expect(parseAppStoreLink("id123456789")).toEqual({ id: "123456789", country: null });
@@ -22,6 +29,9 @@ describe("parseAppStoreLink", () => {
     expect(parseAppStoreLink("https://evil.example.com/us/app/id123456")).toBeNull();
     expect(parseAppStoreLink("https://apps.apple.com/us/app/no-id-here")).toBeNull();
     expect(parseAppStoreLink("hello")).toBeNull();
+    expect(parseAppStoreLink("apps.apple.com.evil.example/us/app/id123456")).toBeNull();
+    expect(parseAppStoreLink("evil.example/apps.apple.com/us/app/id123456")).toBeNull();
+    expect(parseAppStoreLink("apps.apple.com/us/app/no-id-here")).toBeNull();
   });
 });
 

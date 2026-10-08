@@ -16,6 +16,7 @@ export interface ParsedAppLink {
  * Accepts anything a creator might paste:
  *   https://apps.apple.com/us/app/some-name/id1232780281?mt=8
  *   https://apps.apple.com/app/id1232780281
+ *   apps.apple.com/us/app/id1232780281
  *   https://itunes.apple.com/jp/app/id1232780281
  *   id1232780281
  *   1232780281
@@ -28,7 +29,7 @@ export function parseAppStoreLink(input: string): ParsedAppLink | null {
 
   let url: URL;
   try {
-    url = new URL(text);
+    url = new URL(/^(?:apps|itunes)\.apple\.com\//i.test(text) ? "https://" + text : text);
   } catch {
     return null;
   }

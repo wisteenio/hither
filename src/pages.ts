@@ -217,7 +217,7 @@ const homeScript = String.raw`
     const bare = t.match(/^(?:id)?(\d{5,12})$/i);
     if (bare) return bare[1];
     try {
-      const url = new URL(t);
+      const url = new URL(/^(?:apps|itunes)\.apple\.com\//i.test(t) ? "https://" + t : t);
       if (!/^https?:$/.test(url.protocol) || !/(^|\.)(apps|itunes)\.apple\.com$/i.test(url.hostname)) return null;
       const m = url.pathname.match(/\/id(\d{5,12})(?:\/|$)/i);
       return m ? m[1] : null;

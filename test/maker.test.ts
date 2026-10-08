@@ -30,6 +30,33 @@ function maker(fetchApp: typeof fetch) {
 afterEach(() => vi.restoreAllMocks());
 
 describe("link maker", () => {
+  it.each([
+    "1232780281", "id1232780281",
+    "https://apps.apple.com/us/app/id1232780281",
+    "http://apps.apple.com/jp/app/demo/id1232780281?mt=8",
+    "apps.apple.com/us/app/id1232780281",
+    "  apps.apple.com/app/id1232780281  ",
+    "itunes.apple.com/DE/app/demo/id1232780281?mt=8",
+    "https://itunes.apple.com/DE/app/demo/id1232780281?mt=8",
+  ])("makes the same link from an App ID or store URL: %s", (input) => {
+    const page = maker(() => new Promise<Response>(() => {}));
+    page.submit(input);
+    expect(page.document.getElementById("hither-link")?.value).toBe("https://hither.link/1232780281");
+    expect(page.document.querySelector('#out [role="alert"]')).toBeNull();
+  });
+
+  it("accepts the App Store link displayed in the homepage example", () => {
+    const page = maker(() => new Promise<Response>(() => {}));
+    page.submit(page.document.querySelector(".route .to").textContent);
+    expect(page.document.getElementById("hither-link")?.value).toBe("https://hither.link/1232780281");
+  });
+
+  it("accepts the input's placeholder example", () => {
+    const page = maker(() => new Promise<Response>(() => {}));
+    page.submit(page.document.getElementById("app-url").getAttribute("placeholder"));
+    expect(page.document.getElementById("hither-link")?.value).toBe("https://hither.link/123456789");
+  });
+
   it("makes a link immediately while Apple information is still loading", () => {
     const page = maker(() => new Promise<Response>(() => {}));
     page.submit("https://apps.apple.com/app/id6811533642");
@@ -74,6 +101,8 @@ describe("link maker", () => {
   it.each([
     "hello", "https://example.com/app/id6811533642", "https://apps.apple.com.evil.example/app/id6811533642",
     "https://evil.example/apps.apple.com/app/id6811533642", "https://apps.apple.com/app/no-id",
+    "example.com/app/id6811533642", "apps.apple.com.evil.example/app/id6811533642",
+    "evil.example/apps.apple.com/app/id6811533642", "apps.apple.com/app/no-id",
   ])("rejects malformed or non-Apple input: %s", (input) => {
     const fetchApp = vi.fn(async () => unconfirmed());
     const page = maker(fetchApp);
