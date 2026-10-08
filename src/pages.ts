@@ -289,8 +289,8 @@ const homeScript = String.raw`
 // Search and sharing metadata for the homepage. og.png is committed (see docs/DESIGN.md).
 function homeMeta(title: string, origin: string): string {
   const canonical = new URL("/", origin).href;
-  const image = new URL("og.png", canonical).href;
-  const imageAlt = "Hither: one App Store link for every country";
+  const image = new URL("og.png?v=2", canonical).href;
+  const imageAlt = "Hither: one App Store link routes visitors to their local stores in the United States, Germany, and Japan";
   const site = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "WebSite",

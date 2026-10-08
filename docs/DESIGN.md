@@ -58,7 +58,7 @@ All tokens are CSS custom properties on `:root`.
 
 Dark mode follows the device setting. `data-theme="light"` or `data-theme="dark"` on `<html>` forces either theme (no toggle is shipped).
 
-The homepage's X card uses `summary_large_image` with an explicit absolute image URL and image description. Its `twitter:site` and `twitter:creator` attributes use the same creator account as the top-bar profile link. Open Graph and X share the existing 1200×630 preview image, title, and description.
+The homepage's X card uses `summary_large_image` with an explicit absolute image URL and image description. Its `twitter:site` and `twitter:creator` attributes use the same creator account as the top-bar profile link. Open Graph and X share the 1200×630 preview image, title, and description. The image uses the dark palette so it matches the dark homepage; a static social image cannot follow the viewer’s color-scheme preference.
 
 **Rule:** `--signal` is reserved for the country slot. The site icon and the link preview image are that slot, so they use it too; on the page itself, nothing but the hero slot is yellow. Its meaning is "the part Hither fills in"; a second yellow element weakens the hero.
 
@@ -124,7 +124,11 @@ No shadows anywhere, except the input focus glow.
 | FAQ | `.faq details > summary` | Native disclosure. "+" / "−" drawn with `::after`; default marker hidden. |
 | Message page | `.solo` | Top bar plus a vertically centered `.panel` (max `30rem`): optional icon, H1, paragraph, one button. |
 | Site icon | `public/favicon.svg`, `public/apple-touch-icon.png` | The country slot: `--signal` square, corner radius 22% of its width, navy (`--signal-ink`) Overpass 800 "H" centered at 60% of the height, no border or shadow. The "H" is an outline path, so it doesn't depend on fonts. The 180×180 touch icon has square corners because iOS adds its own rounding. Linked from every page's head. |
-| Link preview | `public/og.png`, `previewMeta()` | 1200×630 on `--paper`, 80px padding, left-aligned: the H1 at 72px on two lines, the route line `apps.apple.com/jp/app/id1232780281` in Overpass Mono 600 at 44px with "jp" on the slot, "Hither" at 32px bottom left. Rendered once and committed, never generated per request; re-render it if the headline or colors change. Home page only: `og:title`, `og:description`, `og:image` (absolute, from the request's origin) with width and height, `twitter:card` `summary_large_image`. |
+| Link preview | `public/og.png`, `docs/social-card.html`, `homeMeta()` | 1200×630 on dark `--paper` (`#0F1626`), 64px side gutters. Top: the existing site icon and Hither wordmark, with the domain opposite. Left: 64px Overpass 800 headline, local-store description, and free/open-source/no-signup line. Right: one Hither URL branches into yellow `us`, `de`, and `jp` country slots. Brand and headline stay above X’s lower title overlay. Rendered once and committed, never generated per request. Home page only: absolute `og:image` and `twitter:image` use `og.png?v=2`; increase the version after replacing the image to request a fresh social cache entry. |
+
+### Re-rendering the social image
+
+`docs/social-card.html` is the editable artwork. Its fonts and site icon load from `public/`; the palette matches the dark tokens in `src/pages.ts`. Open it in Chromium with a 1200×630 viewport at device scale 1, wait for `document.fonts.ready`, and capture the `.card` element as `public/og.png`. Inspect the export at full size and at approximately 390–500px wide before replacing it. Keep the font paths and the country-slot colors aligned with the site, and update the image version in `homeMeta()` when publishing a replacement.
 
 ## States and interactions
 

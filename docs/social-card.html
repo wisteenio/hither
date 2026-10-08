@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1200, initial-scale=1">
+<title>Hither social card</title>
+<style>
+@font-face {
+  font-family: "Overpass";
+  font-weight: 100 900;
+  src: url("../public/fonts/overpass-latin-wght-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Overpass Mono";
+  font-weight: 300 700;
+  src: url("../public/fonts/overpass-mono-latin-wght-normal.woff2") format("woff2");
+}
+/* Use the homepage's dark palette from src/pages.ts. The exported PNG is static. */
+:root {
+  --paper: #0F1626;
+  --surface: #162038;
+  --ink: #E8ECF4;
+  --muted: #98A2B8;
+  --line: #26304A;
+  --signal: #FFC93C;
+  --signal-ink: #14213D;
+}
+* { box-sizing: border-box; }
+body {
+  width: 1200px;
+  height: 630px;
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Overpass", sans-serif;
+}
+.card { position: relative; width: 100%; height: 100%; padding: 56px 64px; }
+header { display: flex; align-items: center; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand img { width: 40px; height: 40px; }
+.brand span { font-size: 34px; font-weight: 800; letter-spacing: -0.02em; }
+.domain { font-size: 25px; color: var(--muted); }
+.message { position: absolute; top: 203px; left: 64px; width: 600px; }
+h1 {
+  margin: 0;
+  font-size: 64px;
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.description { margin: 26px 0 0; font-size: 28px; line-height: 1.4; color: var(--muted); }
+.details { margin: 64px 0 0; font-size: 24px; font-weight: 500; color: var(--muted); }
+.routing { position: absolute; top: 195px; right: 64px; width: 432px; text-align: center; }
+.route-label { margin: 0 0 17px; font-size: 25px; color: var(--muted); }
+.shared-link {
+  height: 76px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  font-family: "Overpass Mono", monospace;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+}
+/* This connector describes the real one-link-to-local-store routing. */
+.connector { display: block; width: 432px; height: 82px; color: var(--muted); }
+.destinations { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.destination { display: flex; flex-direction: column; align-items: center; }
+.country-code {
+  display: grid;
+  place-items: center;
+  width: 86px;
+  height: 68px;
+  border-radius: 10px;
+  background: var(--signal);
+  color: var(--signal-ink);
+  font: 600 40px/1 "Overpass Mono", monospace;
+}
+.country-name { margin-top: 17px; font-size: 21px; line-height: 1.2; color: var(--muted); }
+.store-label { margin: 23px 0 0; font-size: 25px; font-weight: 600; }
+</style>
+</head>
+<body>
+<main class="card" aria-label="Hither: one App Store link for every country">
+  <header>
+    <div class="brand"><img src="../public/favicon.svg" alt=""><span>Hither</span></div>
+    <span class="domain">hither.link</span>
+  </header>
+  <section class="message">
+    <h1>One App Store link<br>for every country.</h1>
+    <p class="description">Send visitors to their local App Store.</p>
+    <p class="details">Free. Open source. No signup.</p>
+  </section>
+  <section class="routing" aria-label="One Hither link opens the local App Store for visitors in the United States, Germany, and Japan">
+    <p class="route-label">One link to share</p>
+    <div class="shared-link">hither.link/1232780281</div>
+    <svg class="connector" viewBox="0 0 432 82" fill="none" aria-hidden="true">
+      <path d="M216 0V34M65.3 82V46Q65.3 34 77.3 34H354.7Q366.7 34 366.7 46V82M216 34V82" stroke="currentColor" stroke-opacity="0.65" stroke-width="2"/>
+    </svg>
+    <div class="destinations">
+      <div class="destination"><span class="country-code">us</span><span class="country-name">United States</span></div>
+      <div class="destination"><span class="country-code">de</span><span class="country-name">Germany</span></div>
+      <div class="destination"><span class="country-code">jp</span><span class="country-name">Japan</span></div>
+    </div>
+    <p class="store-label">Their local App Store</p>
+  </section>
+</main>
+</body>
+</html>

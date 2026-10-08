@@ -128,7 +128,7 @@ describe("lookupApp", () => {
 describe("homePage", () => {
   it("points the link preview at the domain it was served from", () => {
     const page = homePage("https://hither.example");
-    expect(page).toContain('<meta property="og:image" content="https://hither.example/og.png">');
+    expect(page).toContain('<meta property="og:image" content="https://hither.example/og.png?v=2">');
     expect(page).toContain('<div class="from">hither.example/1232780281</div>');
   });
 });
